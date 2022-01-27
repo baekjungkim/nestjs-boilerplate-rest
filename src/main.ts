@@ -5,10 +5,18 @@ import { BaseAPIDocumentation } from './api/base.document';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from './common/interceptors/success.interceptor';
+import * as basicAuth from 'express-basic-auth';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  /**  app bootstrap */
+
+  const corsUris = process.env.CORS_URI;
+  /** CORS */
+  app.enableCors({
+    origin: corsUris.replace(' ', '').split(','),
+    credentials: true,
+  });
+  /**  app Prefix */
   app.setGlobalPrefix('/api');
   /** URI Versioning */
   app.enableVersioning({
@@ -21,12 +29,23 @@ async function bootstrap() {
   /** Http Exception Filter */
   app.useGlobalFilters(new HttpExceptionFilter());
 
+  /** Swagger Login */
+  app.use(
+    ['/api/docs', '/api/docs-json'],
+    basicAuth({
+      challenge: true,
+      users: {
+        [process.env.API_USER]: process.env.API_PASSWORD,
+      },
+    }),
+  );
+
   /* mount Swagger API Documentation */
   const documentOptions = new BaseAPIDocumentation().initializeOptions();
   const document = SwaggerModule.createDocument(app, documentOptions);
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
-    customSiteTitle: 'Pinple api docs',
+    customSiteTitle: 'api docs',
   });
 
   const PORT = process.env.PORT;

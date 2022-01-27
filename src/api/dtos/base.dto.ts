@@ -24,7 +24,15 @@ export abstract class BaseErrorOutput {
   error: string;
 
   @ApiProperty({
-    example: 'string | string[]',
+    oneOf: [
+      { type: 'string' },
+      {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    ],
   })
   message: string | string[];
 }

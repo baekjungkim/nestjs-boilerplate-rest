@@ -1,20 +1,4 @@
-# <p align="center">Pinple Backend</p>
-
-<p align="center">A Pinple backend is NestJS + MongoDB</p>
-
-**Framework [NestJS](https://docs.nestjs.kr/)**
-
-**Database [MongoDB](https://docs.mongodb.com/manual/core/document/)**
-
-## Description
-
-[Pinple](https://pinple.com) homepage.
-
-## Clone
-
-```bash
-$ git clone -b dev --single-branch https://github.com/thegraphicnovels/pinple-backend
-```
+# <p align="center">NestJS Boilerplate</p>
 
 ## Setting
 
@@ -23,6 +7,10 @@ $ git clone -b dev --single-branch https://github.com/thegraphicnovels/pinple-ba
 PORT=8000
 MODE=dev
 MONGODB_URI=mongodb+srv://<username>:<password>@<mongodb_uri>/<dbname>
+CORS_URI=http://localhost:3000, http://localhost:3001
+JWT_SECRET=secret
+API_USER=admin
+API_PASSWORD=admin
 ```
 
 ## Running the app

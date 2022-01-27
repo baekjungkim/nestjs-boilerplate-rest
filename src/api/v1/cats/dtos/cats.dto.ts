@@ -1,15 +1,15 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { BaseOutput } from '../../../dtos/base.dto';
 import { Cat } from '../schemas/cats.schema';
-import { CatsReadOnlyData } from './cats.dto';
 
-export class CatsCreateInput extends PickType(Cat, [
+export abstract class CatsReadOnlyData extends PickType(Cat, [
+  'id',
   'email',
   'name',
-  'password',
+  'imgUrl',
 ]) {}
 
-export abstract class CatsCreateOutput extends BaseOutput {
+export abstract class CatsReadOnlyOutput extends BaseOutput {
   @ApiProperty({ type: CatsReadOnlyData })
   data: CatsReadOnlyData;
 }
