@@ -6,9 +6,11 @@ import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/exceptions/http-exception.filter';
 import { SuccessInterceptor } from './common/interceptors/success.interceptor';
 import * as basicAuth from 'express-basic-auth';
+import * as path from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   const corsUris = process.env.CORS_URI;
   /** CORS */
@@ -28,7 +30,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new SuccessInterceptor());
   /** Http Exception Filter */
   app.useGlobalFilters(new HttpExceptionFilter());
-
   /** Swagger Login */
   app.use(
     ['/api/docs', '/api/docs-json'],
@@ -39,6 +40,10 @@ async function bootstrap() {
       },
     }),
   );
+  /** static assets path */
+  app.useStaticAssets(path.join(__dirname, './common', 'uploads'), {
+    prefix: '/media',
+  });
 
   /* mount Swagger API Documentation */
   const documentOptions = new BaseAPIDocumentation().initializeOptions();

@@ -9,6 +9,14 @@ export class CatsRepository {
   constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
 
   /**
+   * Cat 전체조회
+   * @returns Cat[]
+   */
+  async findAll(): Promise<Cat[]> {
+    return this.catModel.find();
+  }
+
+  /**
    * Email 존재여부 조회
    * @param email
    * @returns boolean
@@ -42,5 +50,21 @@ export class CatsRepository {
    */
   async findCatById(id: string): Promise<Cat> {
     return this.catModel.findById(id);
+  }
+
+  /**
+   * 이미지 업데이트
+   * @param id
+   * @param fileName
+   * @returns Cat
+   */
+  async updateImg(id: string, fileName: string): Promise<Cat> {
+    return this.catModel.findByIdAndUpdate(
+      id,
+      {
+        $set: { imgUrl: `http://localhost:8000/media/${fileName}` },
+      },
+      { new: true },
+    );
   }
 }
