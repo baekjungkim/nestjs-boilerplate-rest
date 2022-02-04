@@ -10,6 +10,9 @@ export abstract class CommentOutputData extends PickType(Comment, [
   'info',
 ]) {}
 
+export abstract class CommentsOutput extends BaseOutput {
+  data: [CommentOutputData];
+}
 export abstract class CommentOutput extends BaseOutput {
   data: CommentOutputData;
 }

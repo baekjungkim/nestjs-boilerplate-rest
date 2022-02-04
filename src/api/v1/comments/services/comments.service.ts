@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CatsRepository } from '../../cats/cats.repository';
 import { CommentsRepository } from '../comments.repository';
+import { Comment } from '../comments.schema';
 import { CommentCreateInput } from '../dtos/comments.create.dto';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class CommentsService {
    * 전체 Comment 조회
    * @returns Comment[]
    */
-  async getAllComments() {
+  async getAllComments(): Promise<Comment[]> {
     return this.commentsRepository.findAll();
   }
 
@@ -29,7 +30,7 @@ export class CommentsService {
     infoId: string,
     authorId: string,
     { contents }: CommentCreateInput,
-  ) {
+  ): Promise<Comment> {
     const targetCat = await this.catsRepository.findCatById(infoId);
     const authorCat = await this.catsRepository.findCatById(authorId);
 
@@ -42,8 +43,21 @@ export class CommentsService {
     return comment;
   }
 
-  async addLike(infoId: string) {
-    console.log(infoId);
-    return 'create comment';
+  /**
+   * 좋아요 등록
+   * @param infoId
+   * @returns Comment
+   */
+  async addLike(infoId: string): Promise<Comment> {
+    return this.commentsRepository.addLike(infoId);
+  }
+
+  /**
+   * 좋아요 해제
+   * @param infoId
+   * @returns Comment
+   */
+  async removeLike(infoId: string): Promise<Comment> {
+    return this.commentsRepository.removeLike(infoId);
   }
 }

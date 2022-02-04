@@ -61,7 +61,7 @@ const _CatSchema = SchemaFactory.createForClass(Cat);
 // _CatSchema.virtual('readOnlyData').get(function (this: Cat) {
 //   return {
 //     id: this.id,
-//     email: this.email,
+//     email: this.email,a
 //     name: this.name,
 //     imgUrl: this.imgUrl,
 //     // comments: this.comments,

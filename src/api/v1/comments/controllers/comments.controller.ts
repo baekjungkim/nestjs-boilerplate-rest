@@ -8,6 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -16,8 +17,11 @@ import { CurrentCat } from '../../../../common/decorators/cats.decorator';
 import { BaseErrorOutput } from '../../../dtos/base.dto';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { Cat } from '../../cats/cats.schema';
-import { CommentOutput } from '../dtos/comment.dto';
-import { CommentCreateInput } from '../dtos/comments.create.dto';
+import { CommentOutput, CommentsOutput } from '../dtos/comment.dto';
+import {
+  CommentCreateInput,
+  CommentCreateOutput,
+} from '../dtos/comments.create.dto';
 import { CommentsService } from '../services/comments.service';
 
 @ApiTags('Comments')
@@ -25,14 +29,28 @@ import { CommentsService } from '../services/comments.service';
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
+  /**
+   * 댓글 전체조회
+   * @returns CommentsOutput
+   */
   @Get()
-  @ApiOkResponse({ type: CommentOutput })
+  @ApiOkResponse({ type: CommentsOutput })
   async getAllComments() {
     return this.commentsService.getAllComments();
   }
 
+  /**
+   * 댓글 등록
+   * @param infoId
+   * @param author
+   * @param commentCreateInput
+   * @returns CommentCreateOutput
+   */
   @Post(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiCreatedResponse({
+    type: CommentCreateOutput,
+  })
   @ApiUnauthorizedResponse({
     type: BaseErrorOutput,
   })
@@ -44,12 +62,37 @@ export class CommentsController {
     return this.commentsService.create(infoId, author.id, commentCreateInput);
   }
 
-  @Patch(':id')
+  /**
+   * 댓글 좋아요
+   * @param infoId
+   * @returns CommentOutput
+   */
+  @Patch(':id/like/add')
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    type: CommentOutput,
+  })
   @ApiUnauthorizedResponse({
     type: BaseErrorOutput,
   })
   async addLike(@Param('id') infoId: string) {
     return this.commentsService.addLike(infoId);
+  }
+
+  /**
+   * 댓글 좋아요 해제
+   * @param infoId
+   * @returns CommentOutput
+   */
+  @Patch(':id/like/remove')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    type: CommentOutput,
+  })
+  @ApiUnauthorizedResponse({
+    type: BaseErrorOutput,
+  })
+  async removeLike(@Param('id') infoId: string) {
+    return this.commentsService.removeLike(infoId);
   }
 }
