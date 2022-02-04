@@ -1,8 +1,8 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { CatsCreateInput } from '../dtos/cats-create.dto';
-import { CatsRepository } from '../repositories/cats.repository';
-import { Cat } from '../schemas/cats.schema';
+import { CatsCreateInput } from '../dtos/cats.create.dto';
+import { CatsRepository } from '../cats.repository';
+import { Cat } from '../cats.schema';
 
 @Injectable()
 export class CatsService {
@@ -12,9 +12,17 @@ export class CatsService {
    * 전체조회
    * @returns readOnlyCats
    */
-  async findAllCat() {
+  async getAllCats() {
     const allCats = await this.catsRepository.findAll();
-    const cats = allCats.map((cat) => cat.readOnlyData);
+    const cats = allCats.map((cat) => {
+      return {
+        id: cat.id,
+        name: cat.name,
+        email: cat.email,
+        imgUrl: cat.imgUrl,
+        comments: cat.comments,
+      };
+    });
     return cats;
   }
 
@@ -39,12 +47,22 @@ export class CatsService {
       password: hashedPassword,
     });
 
-    return cat.readOnlyData;
+    return {
+      id: cat.id,
+      name: cat.name,
+      email: cat.email,
+      imgUrl: cat.imgUrl,
+    };
   }
 
   async uploadImg(cat: Cat, files: Express.Multer.File[]) {
     const fileName = `cats/${files[0].filename}`;
     const newCat = await this.catsRepository.updateImg(cat.id, fileName);
-    return newCat.readOnlyData;
+    return {
+      id: newCat.id,
+      name: newCat.name,
+      email: newCat.email,
+      imgUrl: newCat.imgUrl,
+    };
   }
 }

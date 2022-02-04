@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CatsCreateInput } from '../dtos/cats-create.dto';
-import { Cat } from '../schemas/cats.schema';
+import { CatsCreateInput } from './dtos/cats.create.dto';
+import { Cat } from './cats.schema';
+import { Comment } from '../comments/comments.schema';
 
 @Injectable()
 export class CatsRepository {
-  constructor(@InjectModel(Cat.name) private readonly catModel: Model<Cat>) {}
+  constructor(
+    @InjectModel(Cat.name) private readonly catModel: Model<Cat>,
+    @InjectModel(Comment.name) private readonly commentModel: Model<Comment>,
+  ) {}
 
   /**
    * Cat 전체조회
    * @returns Cat[]
    */
   async findAll(): Promise<Cat[]> {
-    return this.catModel.find();
+    return await this.catModel.find().populate('comments');
   }
 
   /**

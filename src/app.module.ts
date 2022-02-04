@@ -6,6 +6,7 @@ import * as Joi from 'joi';
 import { CatsModule } from './api/v1/cats/cats.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 import { AuthModule } from './api/v1/auth/auth.module';
+import { CommentsModule } from './api/v1/comments/comments.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './api/v1/auth/auth.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     AuthModule,
     CatsModule,
+    CommentsModule,
   ],
   controllers: [],
   providers: [],

@@ -1,6 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { BaseOutput } from '../../../dtos/base.dto';
-import { Cat } from '../../cats/schemas/cats.schema';
+import { Cat } from '../../cats/cats.schema';
 
 export class LoginInput extends PickType(Cat, ['email', 'password']) {}
 

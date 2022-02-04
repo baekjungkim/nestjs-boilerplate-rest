@@ -25,9 +25,9 @@ import { BaseErrorOutput } from '../../../dtos/base.dto';
 import { LoginInput, LoginOutput } from '../../auth/dtos/login.dto';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
 import { AuthService } from '../../auth/services/auth.service';
-import { CatsCreateInput, CatsCreateOutput } from '../dtos/cats-create.dto';
+import { CatsCreateInput, CatsCreateOutput } from '../dtos/cats.create.dto';
 import { AllCatsReadOnlyOutput, CatsReadOnlyOutput } from '../dtos/cats.dto';
-import { Cat } from '../schemas/cats.schema';
+import { Cat } from '../cats.schema';
 import { CatsService } from '../services/cats.service';
 
 @ApiTags('Cats')
@@ -46,8 +46,8 @@ export class CatsController {
   @ApiOkResponse({
     type: AllCatsReadOnlyOutput,
   })
-  getAllCat() {
-    return this.catsService.findAllCat();
+  getAllCats() {
+    return this.catsService.getAllCats();
   }
 
   /**
@@ -65,7 +65,12 @@ export class CatsController {
     type: BaseErrorOutput,
   })
   getCurrentCat(@CurrentCat() cat: Cat) {
-    return cat.readOnlyData;
+    return {
+      id: cat.id,
+      name: cat.name,
+      email: cat.email,
+      imgUrl: cat.imgUrl,
+    };
   }
 
   /**
@@ -110,6 +115,7 @@ export class CatsController {
    */
   @Post('upload')
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
   @ApiBearerAuth('TOKEN')
   @ApiConsumes('multipart/form-data')
   @ApiFile('image')
@@ -119,7 +125,6 @@ export class CatsController {
   @ApiUnauthorizedResponse({
     type: BaseErrorOutput,
   })
-  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
   uploadFile(
     @CurrentCat() cat: Cat,
     @UploadedFiles() files: Express.Multer.File[],
