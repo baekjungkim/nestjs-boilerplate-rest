@@ -3,10 +3,14 @@ import * as bcrypt from 'bcrypt';
 import { CatsCreateInput } from '../dtos/cats.create.dto';
 import { CatsRepository } from '../cats.repository';
 import { Cat } from '../cats.schema';
+import { AwsService } from '../../aws/aws.service';
 
 @Injectable()
 export class CatsService {
-  constructor(private readonly catsRepository: CatsRepository) {}
+  constructor(
+    private readonly catsRepository: CatsRepository,
+    private readonly awsService: AwsService,
+  ) {}
 
   /**
    * 전체조회
@@ -55,14 +59,16 @@ export class CatsService {
     };
   }
 
-  async uploadImg(cat: Cat, files: Express.Multer.File[]) {
-    const fileName = `cats/${files[0].filename}`;
-    const newCat = await this.catsRepository.updateImg(cat.id, fileName);
-    return {
-      id: newCat.id,
-      name: newCat.name,
-      email: newCat.email,
-      imgUrl: newCat.imgUrl,
-    };
+  async uploadImgs(cat: Cat, files: Express.Multer.File[]) {
+    const results = await this.awsService.uploadFilesToS3('cats', files);
+    for (const result of results) {
+      const key = result.key;
+      const fileName = this.awsService.getS3FileUrl(key);
+      await this.catsRepository.updateImg(cat.id, fileName);
+    }
+
+    console.log('final');
+    // const fileName = `cats/${files[0].filename}`;
+    return true;
   }
 }

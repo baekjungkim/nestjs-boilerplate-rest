@@ -63,12 +63,9 @@ export class CatsRepository {
    * @returns Cat
    */
   async updateImg(id: string, fileName: string): Promise<Cat> {
-    return this.catModel.findByIdAndUpdate(
-      id,
-      {
-        $set: { imgUrl: `http://localhost:8000/media/${fileName}` },
-      },
-      { new: true },
-    );
+    const cat = await this.findCatById(id);
+    cat.imgUrl = fileName;
+    const newCat = await cat.save();
+    return newCat;
   }
 }

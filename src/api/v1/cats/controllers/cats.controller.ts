@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { ApiFile } from '../../../../common/decorators/api.decorator';
 import { CurrentCat } from '../../../../common/decorators/cats.decorator';
-import { multerOptions } from '../../../../common/utils/multer.options';
 import { BaseErrorOutput } from '../../../dtos/base.dto';
 import { LoginInput, LoginOutput } from '../../auth/dtos/login.dto';
 import { JwtAuthGuard } from '../../auth/jwt/jwt.guard';
@@ -115,7 +114,7 @@ export class CatsController {
    */
   @Post('upload')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FilesInterceptor('image', 10, multerOptions('cats')))
+  @UseInterceptors(FilesInterceptor('image'))
   @ApiBearerAuth('TOKEN')
   @ApiConsumes('multipart/form-data')
   @ApiFile('image')
@@ -125,10 +124,10 @@ export class CatsController {
   @ApiUnauthorizedResponse({
     type: BaseErrorOutput,
   })
-  uploadFile(
+  async uploadFile(
     @CurrentCat() cat: Cat,
     @UploadedFiles() files: Express.Multer.File[],
   ) {
-    return this.catsService.uploadImg(cat, files);
+    return this.catsService.uploadImgs(cat, files);
   }
 }
